@@ -50,7 +50,7 @@
             {
                 Console.WriteLine();
                 Console.WriteLine();                
-                Console.WriteLine($"Royal flush     : {IsRoyalFlush}   = {(IsRoyalFlush?Prizes.RoyalFlush.Value:0)}");
+                Console.WriteLine($"Royal flush     : {IsRoyalFlush}");
                 Console.WriteLine($"Straight flush  : {IsStraightFlush}");
                 Console.WriteLine($"Four of a kind  : {IsFourOfAKind}");
                 Console.WriteLine($"Full house      : {IsFullHouse}");
@@ -69,7 +69,7 @@
         {
             get
             {
-                return cards.GroupBy(card => card.Rank).Any(group => group.Count() >= 2 && group.Key >= CardValue.Jack);
+                return cards.GroupBy(card => card.Rank).Any(group => group.Skip(1).Any() && group.Key >= CardValue.Jack);
             }
         }
 
@@ -77,7 +77,7 @@
         {
             get
             {
-                return cards.GroupBy(card => card.Rank).Count(group => group.Count() == 2) == 2;
+                return cards.GroupBy(card => card.Rank).Where(group => group.Take(3).Count() == 2).Take(3).Count() == 2;
             }
         }
 
@@ -85,7 +85,7 @@
         {
             get
             {
-                return cards.GroupBy(card => card.Rank).Any(group => group.Count() == 3);
+                return cards.GroupBy(card => card.Rank).Any(group => group.Take(4).Count() == 3);
             }
         }
 
@@ -113,7 +113,7 @@
         {
             get
             {
-                return cards.All(card => card.Suit == cards.First().Suit);
+                return cards.TrueForAll(card => card.Suit == cards[0].Suit);
             }
         }
 
@@ -129,7 +129,7 @@
         {
             get
             {
-                return cards.GroupBy(card => card.Rank).Any(group => group.Count() == 4);
+                return cards.GroupBy(card => card.Rank).Any(group => group.Take(5).Count() == 4);
             }
         }
 
@@ -145,7 +145,7 @@
         {
             get
             {
-                return IsFlush && IsStraight && cards.Any(card => card.Rank == CardValue.Ace);
+                return IsFlush && IsStraight && cards.Exists(card => card.Rank == CardValue.Ace);
             }
         }
 
@@ -153,7 +153,7 @@
         {
             get
             {
-                return cards.GroupBy(card => card.Rank).Any(group => group.Count() == 2);
+                return cards.GroupBy(card => card.Rank).Any(group => group.Take(3).Count() == 2);
             }
         }
 

@@ -15,6 +15,9 @@ namespace VideoPoker.Core
             Suit = CardSuit.Diamonds;
             Rank = CardValue.Two;
             CardFacing = CardFacing.Down;
+
+            if ("" == "") { }
+
         }
 
         public Card(CardSuit suit, CardValue rank)

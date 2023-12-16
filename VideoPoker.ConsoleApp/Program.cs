@@ -6,7 +6,7 @@ using VideoPoker.Core;
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 Console.WriteLine(File.ReadAllText("welcome.txt"));
-//Console.ReadKey();
+Console.ReadKey();
 
 Game game = new(25);
 
