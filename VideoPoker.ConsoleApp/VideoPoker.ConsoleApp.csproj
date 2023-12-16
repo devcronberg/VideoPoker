@@ -11,4 +11,10 @@
     <ProjectReference Include="..\VideoPoker.Core\VideoPoker.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="welcome.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

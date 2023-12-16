@@ -8,6 +8,8 @@ namespace VideoPoker.Core
         public CardValue Rank { get; private set; }
         public CardFacing CardFacing { get; private set; }
 
+        public bool HoldCard { get; set; }
+
         public Card()
         {
             Suit = CardSuit.Diamonds;

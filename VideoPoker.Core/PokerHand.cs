@@ -2,7 +2,7 @@
 {    
     public class PokerHand : Deck
     {
-        public PokerHand(Stack<Card> cards)
+        public PokerHand(List<Card> cards)
         {
             this.cards = cards;
         }
@@ -13,7 +13,16 @@
             {
                 throw new Exception("Hand is full");
             }
-            cards.Push(card);
+            cards.Add(card);
+        }
+
+        public void ReplaceCard(int index, Card card)
+        {
+            if (index < 0 || index > 4)
+            {
+                throw new Exception("Index out of range");
+            }
+            cards[index] = card;
         }
 
         public void AddCards(Stack<Card> cards)
@@ -25,18 +34,7 @@
         }
 
 
-        public bool IsFlush()
-        {
-            var suit = cards.Peek().Suit;
-            foreach (var card in cards)
-            {
-                if (card.Suit != suit)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+
 
         public void ConsoleWrite(bool debug = false)
         {
@@ -56,12 +54,12 @@
                 Console.WriteLine($"Straight flush  : {IsStraightFlush}");
                 Console.WriteLine($"Four of a kind  : {IsFourOfAKind}");
                 Console.WriteLine($"Full house      : {IsFullHouse}");
-                Console.WriteLine($"Flush           : {Isflush}");
+                Console.WriteLine($"Flush           : {IsFlush}");
                 Console.WriteLine($"Straight        : {IsStraight}");
                 Console.WriteLine($"Three of a kind : {IsThreeOfAKind}");
                 Console.WriteLine($"Two pair        : {IsTwoPair}");
                 Console.WriteLine($"Jacks or better : {IsJacksOrBetter}");
-                Console.WriteLine($"One pair        : {IsOnePair}");
+                
 
             }
         }
@@ -111,7 +109,7 @@
             }
         }
 
-        public bool Isflush
+        public bool IsFlush
         {
             get
             {
@@ -139,7 +137,7 @@
         {
             get
             {
-                return Isflush && IsStraight;
+                return IsFlush && IsStraight;
             }
         }
 
@@ -147,7 +145,7 @@
         {
             get
             {
-                return Isflush && IsStraight && cards.Any(card => card.Rank == CardValue.Ace);
+                return IsFlush && IsStraight && cards.Any(card => card.Rank == CardValue.Ace);
             }
         }
 
@@ -157,6 +155,11 @@
             {
                 return cards.GroupBy(card => card.Rank).Any(group => group.Count() == 2);
             }
+        }
+
+        public void HoldCard(int index, bool value  = true)
+        {
+            cards[index].HoldCard = value;
         }
     }
 }

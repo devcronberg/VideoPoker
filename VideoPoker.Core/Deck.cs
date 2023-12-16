@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace VideoPoker.Core
 {
-    public class Deck
+    public class Deck : IEnumerable<Card>
     {
        
-        protected Stack<Card> cards = new();
+        protected List<Card> cards = new();
 
         public Card Peek(int index)
         {
@@ -39,13 +40,13 @@ namespace VideoPoker.Core
             this.cards.Clear();
             foreach (var card in cards.OrderBy(c => random.Next()))
             {
-                this.cards.Push(card);
+                this.cards.Add(card);
             }
         }
 
         public virtual void AddCard(Card card)
         {
-            cards.Push(card);
+            cards.Add(card);
         }
         
         public virtual Card DealCard()
@@ -54,20 +55,24 @@ namespace VideoPoker.Core
             {
                 throw new Exception("Deck is empty");
             }
-            return cards.Pop();
+            
+            var card = cards.ElementAt(cards.Count - 1);
+            cards.RemoveAt(cards.Count - 1);
+            return card;
         }
 
-        public virtual Stack<Card> DealCards(int count)
+        public virtual List<Card> DealCards(int count)
         {
             if (cards.Count < count)
             {
                 throw new Exception("Deck is empty");
             }
-            var c = new Stack<Card>();
+            var c = new List<Card>();
             for (int i = 0; i < count; i++)
             {
-                c.Push(cards.Pop());                
-            }
+                c.Add(cards.ElementAt(cards.Count - 1));
+                cards.RemoveAt(cards.Count - 1);
+        }
             return c;
         }
 
@@ -94,6 +99,34 @@ namespace VideoPoker.Core
             return sb.ToString();
         }
 
+        public IEnumerator<Card> GetEnumerator()
+        {
+            return cards.GetEnumerator();
+        }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return cards.GetEnumerator();
+        }
+
+        public Card this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= cards.Count)
+                {
+                    throw new IndexOutOfRangeException();
+                }
+                return cards[index];
+            }
+            set
+            {
+                if (index < 0 || index >= cards.Count)
+                {
+                    throw new IndexOutOfRangeException();
+                }
+                cards[index] = value;
+            }
+        }
     }
 }

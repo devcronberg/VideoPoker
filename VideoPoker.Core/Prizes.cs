@@ -18,18 +18,6 @@ namespace VideoPoker.Core
         public static readonly Prize ThreeOfAKind = new() { Name = "Three of a Kind", Value = 3 };
         public static readonly Prize TwoPair = new() { Name = "Two Pair", Value = 2 };
         public static readonly Prize JacksOrBetter = new() { Name = "Jacks or Better", Value = 1 };
-
-        public static readonly List<Prize> All = new()
-        {
-            RoyalFlush,
-            StraightFlush,
-            FourOfAKind,
-            FullHouse,
-            Flush,
-            Straight,
-            ThreeOfAKind,
-            TwoPair,
-            JacksOrBetter
-        };
+        public static readonly Prize AllOther = new() { Name = "All other", Value = 0 };
     }
 }
