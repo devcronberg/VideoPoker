@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VideoPoker.Core
 {
-    public enum Suit
+    public enum CardSuit
     {
         Hearts,   
         Diamonds, 

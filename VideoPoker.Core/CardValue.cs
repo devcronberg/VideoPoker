@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VideoPoker.Core
 {
-    public enum Rank
+    public enum CardValue
     {
         Two = 2,
         Three,

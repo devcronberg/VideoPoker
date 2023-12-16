@@ -1,6 +1,6 @@
 ﻿using VideoPoker.Core;
 
-Deck deck = Deck.CreateDeck();
-deck.Flip(CardFacing.Up);
-deck.Shuffle();
-Console.WriteLine(deck);
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+Game game = new();
+Console.WriteLine(game.Welcome());

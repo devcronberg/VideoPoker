@@ -4,18 +4,18 @@ namespace VideoPoker.Core
 {
     public class Card
     {
-        public Suit Suit { get; private set; }
-        public Rank Rank { get; private set; }
+        public CardSuit Suit { get; private set; }
+        public CardValue Rank { get; private set; }
         public CardFacing CardFacing { get; private set; }
 
         public Card()
         {
-            Suit = Suit.Diamonds;
-            Rank = Rank.Two;
+            Suit = CardSuit.Diamonds;
+            Rank = CardValue.Two;
             CardFacing = CardFacing.Down;
         }
 
-        public Card(Suit suit, Rank rank)
+        public Card(CardSuit suit, CardValue rank)
         {
             Suit = suit;
             Rank = rank;
@@ -32,28 +32,89 @@ namespace VideoPoker.Core
             CardFacing = cardFacing;
         }
 
+        public bool IsFaceDown => CardFacing == CardFacing.Down;
 
-        public Card(Suit suit, Rank rank, CardFacing cardFacing)
+        public bool IsFaceUp => CardFacing == CardFacing.Up;
+
+
+        public Card(CardSuit suit, CardValue rank, CardFacing cardFacing)
         {
             Suit = suit;
             Rank = rank;
             CardFacing = cardFacing;
         }
 
-        // change the ToString method to print with actual suits
 
         public override string ToString()
         {
-            if(CardFacing == CardFacing.Down)
+            string s = Suit switch
             {
-                return "**";
+                CardSuit.Hearts => "\u2665",
+                CardSuit.Diamonds => "\u2666",
+                CardSuit.Clubs => "\u2663",
+                CardSuit.Spades => "\u2660",
+                _ => ""
+            };
+            var v = "";
+            switch (Rank)
+            {
+                case CardValue.Two:
+                case CardValue.Three:
+                case CardValue.Four:
+                case CardValue.Five:
+                case CardValue.Six:
+                case CardValue.Seven:
+                case CardValue.Eight:
+                case CardValue.Nine:
+                case CardValue.Ten:
+                    v = $"{(int)Rank,2}";
+                    break;
+                case CardValue.Jack:
+                    v = "JA";
+                    break;
+                case CardValue.Queen:
+                    v = "QU";
+                    break;
+                case CardValue.King:
+                    v = "KI";
+                    break;
+                case CardValue.Ace:
+                    v = "AC";
+                    break;
             }
-            return $"{RankHelper.GetRankString(Rank)} {SuitHelper.GetSuitString(Suit)}";
+            if (IsFaceDown)
+            {
+                return "[ * ]";
+            }
+            return $"[{s}{v}]";
         }
-        
+
         public Card Copy()
         {
             return new Card(Suit, Rank, CardFacing);
+        }
+
+        public void ConsoleWrite()
+        {
+            if (IsFaceDown)
+            {
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.Write($"{ToString()}");
+                Console.ResetColor();
+                return;
+            }
+
+            static ConsoleColor GetSuitColor(CardSuit suit)
+            {
+                return suit == CardSuit.Hearts || suit == CardSuit.Diamonds ? ConsoleColor.Red : ConsoleColor.Black;
+            }
+
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = GetSuitColor(Suit);
+            Console.Write($"{ToString()}");
+            Console.ResetColor();
+
+
         }
     }
 

@@ -2,19 +2,33 @@
 {    
     public class PokerHand : Deck
     {
+        public PokerHand(Stack<Card> cards)
+        {
+            this.cards = cards;
+        }
+
         public override void AddCard(Card card)
         {
-            if (_cards.Count == 5)
+            if (cards.Count == 5)
             {
                 throw new Exception("Hand is full");
             }
-            _cards.Push(card);
+            cards.Push(card);
         }
+
+        public void AddCards(Stack<Card> cards)
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                AddCard(cards.Pop());
+            }
+        }
+
 
         public bool IsFlush()
         {
-            var suit = _cards.Peek().Suit;
-            foreach (var card in _cards)
+            var suit = cards.Peek().Suit;
+            foreach (var card in cards)
             {
                 if (card.Suit != suit)
                 {
@@ -24,276 +38,125 @@
             return true;
         }
 
-        public bool IsStraight()
+        public void ConsoleWrite(bool debug = false)
         {
-            var ranks = new List<Rank>();
-            foreach (var card in _cards)
+
+
+            foreach (Card card in cards)
             {
-                ranks.Add(card.Rank);
+                card.ConsoleWrite();
+                Console.Write(" ");
             }
-            ranks.Sort();
-            var rank = ranks[0];
-            foreach (var r in ranks)
+
+            if (debug)
             {
-                if (r != rank)
-                {
-                    return false;
-                }
-                rank++;
+                Console.WriteLine();
+                Console.WriteLine();                
+                Console.WriteLine($"Royal flush     : {IsRoyalFlush}   = {(IsRoyalFlush?Prizes.RoyalFlush.Value:0)}");
+                Console.WriteLine($"Straight flush  : {IsStraightFlush}");
+                Console.WriteLine($"Four of a kind  : {IsFourOfAKind}");
+                Console.WriteLine($"Full house      : {IsFullHouse}");
+                Console.WriteLine($"Flush           : {Isflush}");
+                Console.WriteLine($"Straight        : {IsStraight}");
+                Console.WriteLine($"Three of a kind : {IsThreeOfAKind}");
+                Console.WriteLine($"Two pair        : {IsTwoPair}");
+                Console.WriteLine($"Jacks or better : {IsJacksOrBetter}");
+                Console.WriteLine($"One pair        : {IsOnePair}");
+
             }
-            return true;
         }
 
-        public bool IsStraightFlush()
-        {
-            return IsFlush() && IsStraight();
-        }
 
-        public bool IsRoyalFlush()
+        public bool IsJacksOrBetter
         {
-            return IsStraightFlush() && _cards.Peek().Rank == Rank.Ace;
-        }
-
-        public bool IsFourOfAKind()
-        {
-            var ranks = new List<Rank>();
-            foreach (var card in _cards)
+            get
             {
-                ranks.Add(card.Rank);
+                return cards.GroupBy(card => card.Rank).Any(group => group.Count() >= 2 && group.Key >= CardValue.Jack);
             }
-            ranks.Sort();
-            var rank = ranks[0];
-            var count = 0;
-            foreach (var r in ranks)
+        }
+
+        public bool IsTwoPair
+        {
+            get
             {
-                if (r == rank)
-                {
-                    count++;
-                }
-                else
-                {
-                    count = 1;
-                    rank = r;
-                }
-                if (count == 4)
+                return cards.GroupBy(card => card.Rank).Count(group => group.Count() == 2) == 2;
+            }
+        }
+
+        public bool IsThreeOfAKind
+        {
+            get
+            {
+                return cards.GroupBy(card => card.Rank).Any(group => group.Count() == 3);
+            }
+        }
+
+        public bool IsStraight
+        {
+            get
+            {
+                var ordered = cards.OrderBy(card => card.Rank).ToList();
+                if (ordered[0].Rank == CardValue.Two && ordered[1].Rank == CardValue.Three && ordered[2].Rank == CardValue.Four && ordered[3].Rank == CardValue.Five && ordered[4].Rank == CardValue.Ace)
                 {
                     return true;
                 }
+                for (int i = 0; i < ordered.Count - 1; i++)
+                {
+                    if (ordered[i].Rank + 1 != ordered[i + 1].Rank)
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
-            return false;
         }
 
-        public bool IsFullHouse()
+        public bool Isflush
         {
-            var ranks = new List<Rank>();
-            foreach (var card in _cards)
+            get
             {
-                ranks.Add(card.Rank);
+                return cards.All(card => card.Suit == cards.First().Suit);
             }
-            ranks.Sort();
-            var rank = ranks[0];
-            var count = 0;
-            foreach (var r in ranks)
-            {
-                if (r == rank)
-                {
-                    count++;
-                }
-                else
-                {
-                    count = 1;
-                    rank = r;
-                }
-                if (count == 3)
-                {
-                    break;
-                }
-            }
-            if (count != 3)
-            {
-                return false;
-            }
-            foreach (var r in ranks)
-            {
-                if (r != rank)
-                {
-                    count = 1;
-                    rank = r;
-                    break;
-                }
-            }
-            if (count != 1)
-            {
-                return false;
-            }
-            foreach (var r in ranks)
-            {
-                if (r == rank)
-                {
-                    count++;
-                }
-                else
-                {
-                    count = 1;
-                    rank = r;
-                }
-                if (count == 2)
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
-        public bool IsThreeOfAKind()
+        public bool IsFullHouse
         {
-            var ranks = new List<Rank>();
-            foreach (var card in _cards)
+            get
             {
-                ranks.Add(card.Rank);
+                return IsThreeOfAKind && IsOnePair;
             }
-            ranks.Sort();
-            var rank = ranks[0];
-            var count = 0;
-            foreach (var r in ranks)
-            {
-                if (r == rank)
-                {
-                    count++;
-                }
-                else
-                {
-                    count = 1;
-                    rank = r;
-                }
-                if (count == 3)
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
-        public bool IsTwoPair()
+        public bool IsFourOfAKind
         {
-            var ranks = new List<Rank>();
-            foreach (var card in _cards)
+            get
             {
-                ranks.Add(card.Rank);
+                return cards.GroupBy(card => card.Rank).Any(group => group.Count() == 4);
             }
-            ranks.Sort();
-            var rank = ranks[0];
-            var count = 0;
-            foreach (var r in ranks)
-            {
-                if (r == rank)
-                {
-                    count++;
-                }
-                else
-                {
-                    count = 1;
-                    rank = r;
-                }
-                if (count == 2)
-                {
-                    break;
-                }
-            }
-            if (count != 2)
-            {
-                return false;
-            }
-            foreach (var r in ranks)
-            {
-                if (r != rank)
-                {
-                    count = 1;
-                    rank = r;
-                    break;
-                }
-            }
-            if (count != 1)
-            {
-                return false;
-            }
-            foreach (var r in ranks)
-            {
-                if (r == rank)
-                {
-                    count++;
-                }
-                else
-                {
-                    count = 1;
-                    rank = r;
-                }
-                if (count == 2)
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
-        public bool IsPair()
+        public bool IsStraightFlush
         {
-            var ranks = new List<Rank>();
-            foreach (var card in _cards)
+            get
             {
-                ranks.Add(card.Rank);
+                return Isflush && IsStraight;
             }
-            ranks.Sort();
-            var rank = ranks[0];
-            var count = 0;
-            foreach (var r in ranks)
-            {
-                if (r == rank)
-                {
-                    count++;
-                }
-                else
-                {
-                    count = 1;
-                    rank = r;
-                }
-                if (count == 2)
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
-        public bool IsJacksOrBetter()
+        public bool IsRoyalFlush
         {
-            var ranks = new List<Rank>();
-            foreach (var card in _cards)
+            get
             {
-                ranks.Add(card.Rank);
+                return Isflush && IsStraight && cards.Any(card => card.Rank == CardValue.Ace);
             }
-            ranks.Sort();
-            var rank = ranks[0];
-            var count = 0;
-            foreach (var r in ranks)
-            {
-                if (r == rank)
-                {
-                    count++;
-                }
-                else
-                {
-                    count = 1;
-                    rank = r;
-                }
-                if (count == 2 && (rank == Rank.Jack || rank == Rank.Queen || rank == Rank.King || rank == Rank.Ace))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
-
+        public bool IsOnePair
+        {
+            get
+            {
+                return cards.GroupBy(card => card.Rank).Any(group => group.Count() == 2);
+            }
+        }
     }
 }
